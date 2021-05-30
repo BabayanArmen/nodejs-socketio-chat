@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+    <link rel="stylesheet" href="home.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="header"></div>
+        <div class="box">
+            <p>Please choose nick name</p>
+            <p class="errorMessage" id="errorMessage">Hey, come on, you must enter nickname</p>
+            <input class="nickInput" type="text" id="nickname">
+            <br>
+            <br>
+            <button class="submitButton" onclick="submit()">Enter</button>
+        
+            <a style="display: none;" id="chatButton" href="chat">go to chat</a>
+        </div>
+    </div>
+
+    <script>
+        const sendHttpRequest = (method, url, data) => {
+            return fetch(url, {
+                method: method,
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+            }).then(response => {
+                return response.json()
+            })
+        }
+
+        function submit() {
+            let value = document.getElementById('nickname').value
+            if(value == '') {
+                let errorMessage = document.getElementById('errorMessage')
+                errorMessage.style.display = 'block'
+                return;
+            }
+            console.log(value);
+            let obj = {
+                nickname: value
+            }
+            sendHttpRequest('POST', 'http://localhost:3001/setNickName', obj)
+            .then(responseData => {
+                console.log(responseData)
+                document.getElementById('chatButton').click()
+            })
+            .catch(error => console.log(error))
+        }
+        document.getElementById('nickname').addEventListener('keypress', (e) => {
+            if(e.key == 'Enter') {
+                submit();
+            }
+        })
+
+    </script>
+</body>
+</html>

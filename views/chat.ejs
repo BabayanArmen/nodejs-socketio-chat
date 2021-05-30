@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+    <link rel="stylesheet" href="chat.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="header">
+            <span class="userName">Hello &nbsp; <span class="nickNameSpan" id="nickname"><%= name %></span>,&nbsp;please be polite and have fun</span>
+        </div>
+        <div class="messages" id="messages"></div>
+        <div class="footer">
+            <input class="messageInput" type="text" id="message">
+            <button class="sendButton" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const socket = io('http://localhost:3001')
+        socket.on('connection')
+        socket.on('message', message => {
+            let messagesDiv = document.getElementById('messages')
+            let newMessage = document.createElement('span')
+            newMessage.className = "message"
+            newMessage.innerText = message
+            messagesDiv.appendChild(newMessage)
+        })
+        function sendMessage() {
+            let inputEl = document.getElementById('message')
+            message = inputEl.value
+            if(message == '') {
+                return
+            }
+            let spanEl = document.getElementById("nickname")
+            let newMessage = spanEl.innerText + ' : ' + message
+            socket.emit('message', newMessage)
+            document.getElementById('message').value = ''
+        }
+        document.getElementById('message').addEventListener('keypress', (e) => {
+            if(e.key == 'Enter') {
+                sendMessage();
+            }
+        })
+    </script>
+</body>
+</html>
